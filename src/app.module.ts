@@ -9,6 +9,7 @@ import { ProductsModule } from './modules/products/products.module';
 import { DatabaseModule } from './modules/database/database.module';
 import { environments } from './environments';
 import config from './config';
+import { mysqlSchema, pgSchema } from './schema';
 
 @Module({
   imports: [
@@ -20,11 +21,7 @@ import config from './config';
       envFilePath: environments[process.env.NODE_ENV] || '.env',
       load: [config],
       isGlobal: true,
-      validationSchema: Joi.object({
-        API_KEY: Joi.number().required(),
-        DATABASE_NAME: Joi.string().required(),
-        DATABASE_PORT: Joi.number().required(),
-      }),
+      validationSchema: mysqlSchema,
     }),
   ],
   controllers: [AppController],

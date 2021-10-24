@@ -1,62 +1,41 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
 import { Product } from 'src/modules/products/entities/product.entity';
 import {
   CreateProductDto,
   UpdateProductDto,
 } from 'src/modules/products/dtos/product.dto';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProductsService {
-  private counter = 1;
-  private products: Product[] = [
-    {
-      id: 1,
-      name: 'Product 1',
-      description: 'Description 1',
-      price: 120,
-      stock: 10,
-      image: '',
-    },
-  ];
+  constructor(
+    @InjectRepository(Product) private productRepository: Repository<Product>,
+  ) {}
 
   findAll() {
-    return this.products;
+    return this.productRepository.find();
   }
 
-  findOne(id: number) {
-    const product = this.products.find((item) => item.id === id);
+  async findOne(id: number) {
+    const product = await this.productRepository.findOne(id);
     if (!product) throw new NotFoundException(`Product #${id} not found`);
     return product;
   }
 
   create(payload: CreateProductDto) {
-    const newProduct = {
-      id: ++this.counter,
-      ...payload,
-    };
-    this.products.push(newProduct);
-    return newProduct;
+    const newProduct = this.productRepository.create(payload);
+    return this.productRepository.save(newProduct);
   }
 
-  update(id: number, payload: UpdateProductDto) {
-    const product = this.findOne(id);
-    console.log(product);
-    if (product) {
-      const index = this.products.findIndex((item) => item.id === product.id);
-      this.products[index] = {
-        ...product,
-        ...payload,
-      };
-      return this.products[index];
-    }
-
-    return null;
+  async update(id: number, payload: UpdateProductDto) {
+    const product = await this.productRepository.findOne(id);
+    this.productRepository.merge(product, payload);
+    return this.productRepository.save(product);
   }
 
   delete(id: number) {
-    const product = this.findOne(id);
-    const index = this.products.indexOf(product);
-    this.products.splice(index, 1);
-    return product;
+    return this.productRepository.delete(id);
   }
 }

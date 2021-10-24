@@ -29,7 +29,7 @@ export class ProductsController {
   getProducts(
     @Query('limit') limit = 100,
     @Query('offset') offset = 0,
-    @Query('brand') brand: string,
+    @Query('brand') brand = '',
   ) {
     // return {
     //   message: `products ${limit} - ${offset} - ${brand}`,
