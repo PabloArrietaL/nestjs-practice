@@ -21,7 +21,7 @@ import { mysqlSchema, pgSchema } from './schema';
       envFilePath: environments[process.env.NODE_ENV] || '.env',
       load: [config],
       isGlobal: true,
-      validationSchema: mysqlSchema,
+      validationSchema: pgSchema,
     }),
   ],
   controllers: [AppController],
